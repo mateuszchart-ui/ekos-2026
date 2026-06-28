@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EKOS 2026 - Biuro Informacji Turystycznej</title>
+
+<style>
+/* =========================
+   PODSTAWOWY STYL
+========================= */
+
+body{
+    margin:0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #e8f4f8, #f7fbfc);
+    color:#1f2d3a;
+}
+
+/* główny kontener */
+.app{
+    max-width: 760px;
+    margin: 30px auto;
+    background: #ffffff;
+    padding: 24px;
+    border-radius: 18px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+}
+
+/* nagłówek */
+.header{
+    text-align:center;
+    margin-bottom: 20px;
+}
+
+.logo{
+    font-size: 28px;
+    font-weight: bold;
+    color:#0a7c66;
+}
+
+.subtitle{
+    font-size: 16px;
+    color:#555;
+}
+
+/* stacja */
+.station-box{
+    background:#f0f7f6;
+    padding:14px;
+    border-radius:12px;
+    margin:20px 0;
+    text-align:center;
+    font-weight:bold;
+}
+
+/* sekcje */
+.section{
+    margin-top:18px;
+    padding:14px;
+    border:1px solid #e6e6e6;
+    border-radius:12px;
+    background:#fff;
+}
+
+/* formularze */
+select, input{
+    width:100%;
+    padding:12px;
+    margin-top:8px;
+    border-radius:10px;
+    border:1px solid #ccc;
+    font-size:16px;
+}
+
+/* przyciski */
+button{
+    width:100%;
+    padding:12px;
+    margin-top:14px;
+    background:#0a7c66;
+    color:white;
+    border:none;
+    border-radius:10px;
+    font-size:16px;
+    cursor:pointer;
+}
+
+button:hover{
+    background:#07584a;
+}
+
+/* placeholder na link */
+.link-box{
+    margin-top:18px;
+    padding:14px;
+    border-radius:12px;
+    background:#eaf3ff;
+    text-align:center;
+    display:none; /* aktywowane w części 2 */
+}
+
+/* komunikaty */
+.message{
+    margin-top:12px;
+    font-weight:bold;
+    text-align:center;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- =========================
+         HEADER
+    ========================== -->
+    <div class="header">
+        <div class="logo">🧭 EKOS 2026</div>
+        <div class="subtitle">Biuro Informacji Turystycznej</div>
+    </div>
+
+    <!-- =========================
+         STACJA
+    ========================== -->
+    <div class="station-box">
+        📍 STACJA: <span id="stationNumber">1</span>
+    </div>
+
+    <!-- =========================
+         WYBÓR KLASY
+    ========================== -->
+    <div class="section">
+        <label><strong>Wybierz klasę</strong></label>
+        <select id="classSelect">
+            <option value="1LO">I LO</option>
+            <option value="2LO">II LO</option>
+            <option value="3LO">III LO</option>
+        </select>
+    </div>
+
+    <!-- =========================
+         HASŁO
+    ========================== -->
+    <div class="section">
+        <label><strong>Hasło z filmu</strong></label>
+        <input type="text" id="passwordInput" placeholder="Wpisz hasło...">
+
+        <button onclick="checkPassword()">ODKODUJ STACJĘ</button>
+
+        <div class="message" id="messageBox"></div>
+    </div>
+
+    <!-- =========================
+         LINK DO WAYGROUND
+    ========================== -->
+    <div class="link-box" id="linkBox">
+        <p>✔ Stacja odblokowana</p>
+        <a id="waygroundLink" href="#" target="_blank">
+            ➜ Przejdź do zadania
+        </a>
+    </div>
+
+</div>
+
+<!-- =========================
+     LOGIKA (CZĘŚĆ 2)
+     - zostanie dodana później
+========================= -->
+<script>
+/* TU DODAMY LOGIKĘ W CZĘŚCI 2 */
+</script>
+
+</body>
+</html>
+
+<script>
+
+/* =========================
+   PARAMETRY STACJI (QR)
+   ?stacja=1 ... ?stacja=5
+========================= */
+
+const urlParams = new URLSearchParams(window.location.search);
+const station = parseInt(urlParams.get("stacja") || "1");
+
+document.getElementById("stationNumber").innerText = station;
+
+/* =========================
+   ZAPAMIĘTYWANIE KLASY
+========================= */
+
+const classSelect = document.getElementById("classSelect");
+const savedClass = localStorage.getItem("ekos_class");
+
+if (savedClass) {
+    classSelect.value = savedClass;
+}
+
+classSelect.addEventListener("change", () => {
+    localStorage.setItem("ekos_class", classSelect.value);
+});
+
+/* =========================
+   HASŁA (3 KLASY × 5 STACJI)
+========================= */
+
+const PASSWORDS = {
+    "1LO": {
+        1: "RATHAUS",
+        2: "BRUNNEN",
+        3: "DENKMAL",
+        4: "ROUTE",
+        5: "EMPFEHLUNG"
+    },
+    "2LO": {
+        1: "TOURISTINFO",
+        2: "WEG",
+        3: "TOURIST",
+        4: "PLAN",
+        5: "REISE"
+    },
+    "3LO": {
+        1: "MARKTPLATZ",
+        2: "ZENTRUM",
+        3: "FOTO",
+        4: "STADTPLAN",
+        5: "DEUTSCHLAND"
+    }
+};
+
+/* =========================
+   LINKI DO WAYGROUND
+   (TU WKLEJESZ FINALNE URL-e)
+========================= */
+
+const LINKS = {
+    "1LO": {
+        1: "#",
+        2: "#",
+        3: "#",
+        4: "#",
+        5: "#"
+    },
+    "2LO": {
+        1: "#",
+        2: "#",
+        3: "#",
+        4: "#",
+        5: "#"
+    },
+    "3LO": {
+        1: "#",
+        2: "#",
+        3: "#",
+        4: "#",
+        5: "#"
+    }
+};
+
+/* =========================
+   ELEMENTY UI
+========================= */
+
+const passwordInput = document.getElementById("passwordInput");
+const messageBox = document.getElementById("messageBox");
+const linkBox = document.getElementById("linkBox");
+const waygroundLink = document.getElementById("waygroundLink");
+
+/* =========================
+   SPRAWDZANIE HASŁA
+========================= */
+
+function checkPassword(){
+
+    const selectedClass = classSelect.value;
+    const enteredPassword = passwordInput.value.trim().toUpperCase();
+
+    const correctPassword =
+        PASSWORDS[selectedClass]?.[station];
+
+    // zapis klasy
+    localStorage.setItem("ekos_class", selectedClass);
+
+    if (enteredPassword === correctPassword) {
+
+        messageBox.style.color = "green";
+        messageBox.innerHTML = "✔ Hasło poprawne! Stacja odblokowana.";
+
+        linkBox.style.display = "block";
+
+        waygroundLink.href = LINKS[selectedClass][station];
+
+    } else {
+
+        messageBox.style.color = "crimson";
+        messageBox.innerHTML = "✘ Błędne hasło dla tej klasy i stacji.";
+
+        linkBox.style.display = "none";
+    }
+}
+
+/* =========================
+   AUTO-START
+========================= */
+
+window.onload = () => {
+    // opcjonalnie: można tu dodać animację startową
+};
+
+</script>
+
+
+/* =========================
+   ANIMACJE I EFEKTY
+========================= */
+
+.fade-in{
+    animation: fadeIn 0.6s ease-in-out;
+}
+
+@keyframes fadeIn{
+    from {opacity:0; transform: translateY(10px);}
+    to {opacity:1; transform: translateY(0);}
+}
+
+/* sukces */
+.success{
+    background: #e7fff1 !important;
+    border: 2px solid #1bbf6b;
+}
+
+/* błąd */
+.error{
+    background: #ffecec !important;
+    border: 2px solid #e74c3c;
+}
+
+/* efekt „pulse” dla przycisku */
+button{
+    transition: transform 0.2s ease, background 0.2s ease;
+}
+
+button:active{
+    transform: scale(0.98);
+}
+
+/* link jako „graficzny przycisk” */
+#waygroundLink{
+    display:inline-block;
+    margin-top:10px;
+    padding:12px 18px;
+    background:#1976d2;
+    color:white;
+    border-radius:10px;
+    text-decoration:none;
+    font-weight:bold;
+    animation: fadeIn 0.5s ease;
+}
+
+/* ikonka stacji */
+.station-icon{
+    font-size:28px;
+    margin-bottom:5px;
+}
+
+
+const STATION_ICONS = {
+    1: "🏛",
+    2: "⛲",
+    3: "🗿",
+    4: "🪑",
+    5: "📍"
+};
+
+document.getElementById("stationNumber").innerHTML =
+    STATION_ICONS[station] + " " + station;
+
+
+function checkPassword(){
+
+    const selectedClass = classSelect.value;
+    const enteredPassword = passwordInput.value.trim().toUpperCase();
+
+    const correctPassword =
+        PASSWORDS[selectedClass]?.[station];
+
+    localStorage.setItem("ekos_class", selectedClass);
+
+    // reset stylu
+    document.querySelector(".section").classList.remove("success","error");
+
+    if (enteredPassword === correctPassword) {
+
+        messageBox.style.color = "#1bbf6b";
+        messageBox.innerHTML = "✔ Hasło poprawne! Stacja odblokowana.";
+
+        linkBox.style.display = "block";
+
+        waygroundLink.href = LINKS[selectedClass][station];
+
+        // efekt wizualny sukcesu
+        document.querySelector(".section").classList.add("success","fade-in");
+
+        // auto-scroll do linku
+        setTimeout(() => {
+            linkBox.scrollIntoView({behavior:"smooth"});
+        }, 300);
+
+    } else {
+
+        messageBox.style.color = "#e74c3c";
+        messageBox.innerHTML = "✘ Błędne hasło dla tej klasy i stacji.";
+
+        linkBox.style.display = "none";
+
+        // efekt błędu
+        document.querySelector(".section").classList.add("error","fade-in");
+
+        // „wstrząs” (shake efekt)
+        document.querySelector(".section").style.animation =
+            "shake 0.3s";
+
+        setTimeout(()=>{
+            document.querySelector(".section").style.animation = "";
+        },300);
+    }
+}
+
+
+@keyframes shake {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  50% { transform: translateX(5px); }
+  75% { transform: translateX(-5px); }
+  100% { transform: translateX(0); }
+}
+
+
+window.onload = () => {
+
+    document.querySelector(".app").classList.add("fade-in");
+
+    // mały efekt wejścia
+    console.log("EKOS 2026 - Biuro Informacji Turystycznej");
+};
