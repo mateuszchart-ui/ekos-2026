@@ -74,15 +74,15 @@ button{
     border-radius:10px;
     font-size:16px;
     cursor:pointer;
-    transition: 0.2s;
-}
-
-button:active{
-    transform: scale(0.98);
+    transition:0.2s;
 }
 
 button:hover{
     background:#07584a;
+}
+
+button:active{
+    transform: scale(0.98);
 }
 
 .link-box{
@@ -100,33 +100,6 @@ button:hover{
     text-align:center;
 }
 
-.success{
-    background: #e7fff1 !important;
-    border: 2px solid #1bbf6b !important;
-}
-
-.error{
-    background: #ffecec !important;
-    border: 2px solid #e74c3c !important;
-}
-
-.fade-in{
-    animation: fadeIn 0.6s ease-in-out;
-}
-
-@keyframes fadeIn{
-    from {opacity:0; transform: translateY(10px);}
-    to {opacity:1; transform: translateY(0);}
-}
-
-@keyframes shake {
-  0% { transform: translateX(0); }
-  25% { transform: translateX(-5px); }
-  50% { transform: translateX(5px); }
-  75% { transform: translateX(-5px); }
-  100% { transform: translateX(0); }
-}
-
 #waygroundLink{
     display:inline-block;
     margin-top:10px;
@@ -136,6 +109,25 @@ button:hover{
     border-radius:10px;
     text-decoration:none;
     font-weight:bold;
+}
+
+.success{
+    background:#e7fff1 !important;
+    border:2px solid #1bbf6b !important;
+}
+
+.error{
+    background:#ffecec !important;
+    border:2px solid #e74c3c !important;
+}
+
+.fade-in{
+    animation: fadeIn 0.6s ease-in-out;
+}
+
+@keyframes fadeIn{
+    from {opacity:0; transform: translateY(10px);}
+    to {opacity:1; transform: translateY(0);}
 }
 </style>
 </head>
@@ -173,17 +165,25 @@ button:hover{
 
     <div class="link-box" id="linkBox">
         <p>✔ Stacja odblokowana</p>
-        <a id="waygroundLink" href="#" target="_blank">➜ Przejdź do zadania</a>
+        <a id="waygroundLink" href="#" target="_blank">
+            ➜ Przejdź do zadania
+        </a>
     </div>
 
 </div>
 
 <script>
+// =========================
+// STACJA Z QR
+// =========================
 const urlParams = new URLSearchParams(window.location.search);
 const station = parseInt(urlParams.get("stacja") || "1");
 
 document.getElementById("stationNumber").innerText = station;
 
+// =========================
+// PAMIĘĆ KLASY
+// =========================
 const classSelect = document.getElementById("classSelect");
 const savedClass = localStorage.getItem("ekos_class");
 
@@ -193,23 +193,71 @@ classSelect.addEventListener("change", () => {
     localStorage.setItem("ekos_class", classSelect.value);
 });
 
+// =========================
+// HASŁA
+// =========================
 const PASSWORDS = {
-    "1LO": {1:"RATHAUS",2:"BRUNNEN",3:"DENKMAL",4:"ROUTE",5:"EMPFEHLUNG"},
-    "2LO": {1:"TOURISTINFO",2:"WEG",3:"TOURIST",4:"PLAN",5:"REISE"},
-    "3LO": {1:"MARKTPLATZ",2:"ZENTRUM",3:"FOTO",4:"STADTPLAN",5:"DEUTSCHLAND"}
+    "1LO": {
+        1: "RATHAUS",
+        2: "BRUNNEN",
+        3: "DENKMAL",
+        4: "ROUTE",
+        5: "EMPFEHLUNG"
+    },
+    "2LO": {
+        1: "TOURISTINFO",
+        2: "WEG",
+        3: "TOURIST",
+        4: "PLAN",
+        5: "REISE"
+    },
+    "3LO": {
+        1: "MARKTPLATZ",
+        2: "ZENTRUM",
+        3: "FOTO",
+        4: "STADTPLAN",
+        5: "DEUTSCHLAND"
+    }
 };
 
+// =========================
+// LINKI DO STACJI (VIDEO + QUIZ)
+// =========================
 const LINKS = {
-    "1LO": {1:"#",2:"#",3:"#",4:"#",5:"#"},
-    "2LO": {1:"#",2:"#",3:"#",4:"#",5:"#"},
-    "3LO": {1:"#",2:"#",3:"#",4:"#",5:"#"}
+    "1LO": {
+        1: "stacje/1/1LO.html",
+        2: "stacje/2/1LO.html",
+        3: "stacje/3/1LO.html",
+        4: "stacje/4/1LO.html",
+        5: "stacje/5/1LO.html"
+    },
+    "2LO": {
+        1: "stacje/1/2LO.html",
+        2: "stacje/2/2LO.html",
+        3: "stacje/3/2LO.html",
+        4: "stacje/4/2LO.html",
+        5: "stacje/5/2LO.html"
+    },
+    "3LO": {
+        1: "stacje/1/3LO.html",
+        2: "stacje/2/3LO.html",
+        3: "stacje/3/3LO.html",
+        4: "stacje/4/3LO.html",
+        5: "stacje/5/3LO.html"
+    }
 };
 
+// =========================
+// ELEMENTY
+// =========================
 const passwordInput = document.getElementById("passwordInput");
 const messageBox = document.getElementById("messageBox");
 const linkBox = document.getElementById("linkBox");
 const waygroundLink = document.getElementById("waygroundLink");
 
+// =========================
+// LOGIKA HASŁA
+// =========================
 function checkPassword(){
 
     const selectedClass = classSelect.value;
@@ -223,7 +271,7 @@ function checkPassword(){
     if (enteredPassword === correctPassword) {
 
         messageBox.style.color = "#1bbf6b";
-        messageBox.innerHTML = "✔ Hasło poprawne!";
+        messageBox.innerHTML = "✔ Hasło poprawne! Stacja odblokowana.";
 
         linkBox.style.display = "block";
         waygroundLink.href = LINKS[selectedClass][station];
@@ -233,17 +281,17 @@ function checkPassword(){
     } else {
 
         messageBox.style.color = "#e74c3c";
-        messageBox.innerHTML = "✘ Błędne hasło";
+        messageBox.innerHTML = "✘ Błędne hasło.";
 
         linkBox.style.display = "none";
 
         document.querySelector(".section").classList.add("error","fade-in");
-
-        document.querySelector(".section").style.animation = "shake 0.3s";
-        setTimeout(()=>document.querySelector(".section").style.animation="",300);
     }
 }
 
+// =========================
+// START
+// =========================
 window.onload = () => {
     document.querySelector(".app").classList.add("fade-in");
 };
